@@ -64,7 +64,8 @@ dependencies {
     
     testCompile("junit:junit")
 }
-
+/*
 task wrapper(type: Wrapper) {
     gradleVersion = '5.0'
 }
+*/
