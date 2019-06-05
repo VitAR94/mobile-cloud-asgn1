@@ -26,6 +26,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,13 +66,16 @@ public class VideoController {
     }
 
     @RequestMapping(value = "/video/{id}/data", method = RequestMethod.POST)
-    public @ResponseBody VideoStatus setVideoData(@PathVariable long id, MultipartFile data){
+    public @ResponseBody VideoStatus setVideoData(@PathVariable("id") long id,
+                                                  @RequestParam("data") MultipartFile videoData){
         return new VideoStatus(VideoStatus.VideoState.READY);
     }
 
     @RequestMapping(value = "/video/{id}/data", method = RequestMethod.GET)
-    public MultipartFile getData(@PathVariable long id){
-        return null;
+    public void getData(@PathVariable long id,
+                        HttpServletResponse response,
+                        HttpServletRequest request){
+
     }
 
     private String getUrlBaseForLocalServer() {
