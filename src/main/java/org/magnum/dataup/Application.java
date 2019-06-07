@@ -35,7 +35,9 @@ import org.springframework.context.annotation.Configuration;
 //information
 //for the application.
 @Configuration
-public class Application {
+public class Application 
+    //для себя - чтоб настроить конвертацию результата по типам
+    extends WebMvcConfigurationSupport {
 
     private static final String MAX_REQUEST_SIZE = "150MB";
 
@@ -61,5 +63,22 @@ public class Application {
         // Return the configuration to setup multipart in the container
         return factory.createMultipartConfig();
     }
+    
+    //////
+    //для себя - чтоб настроить конвертацию результата по типам
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(byteArrayHttpMessageConverter());
+        addDefaultHttpMessageConverters(converters);
+    }
+    @Bean
+    public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {
+        ByteArrayHttpMessageConverter arrayHttpMessageConverter = new ByteArrayHttpMessageConverter();
+        arrayHttpMessageConverter.setSupportedMediaTypes(
+                Arrays.asList(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG, MediaType.APPLICATION_OCTET_STREAM));
+        return arrayHttpMessageConverter;
+    }
+    
+    
 
 }

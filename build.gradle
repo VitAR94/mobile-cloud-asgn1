@@ -63,6 +63,8 @@ dependencies {
     compile(":autograder.spec:1.0.0")
     
     testCompile("junit:junit")
+    
+    compile("commons-io:commons-io")
 }
 /*
 task wrapper(type: Wrapper) {

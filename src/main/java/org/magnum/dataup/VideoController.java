@@ -82,4 +82,70 @@ public class VideoController {
        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
        return "http://"+request.getServerName()+((request.getServerPort() != 80) ? ":"+request.getServerPort() : "");
     }
+    
+    ///////////////////////////////
+    //для себя
+    //вазврат multipart
+    @RequestMapping(value="/image-multipart", method=RequestMethod.POST)
+    @ResponseBody
+    public MultiValueMap<String, Object> getVideo(@RequestBody User user, HttpServletResponse httpResponse) throws IOException, JAXBException {
+        v.setId(-1);
+        MultiValueMap<String, Object> form = new LinkedMultiValueMap<String, Object>();  
+        form.add("video", v);
+        form.add("file", new FileSystemResource("/tmp/1.1")); 
+        httpResponse.setContentType(MediaType.MULTIPART_FORM_DATA_VALUE); // <-- IMPORTANT
+        return form;
+    }
+    
+    //способы возврата бинарных данных
+    //Using the HttpServletResponse
+    @RequestMapping(value = "/image-manual-response", method = RequestMethod.GET)
+    public void getImageAsByteArray(HttpServletResponse response) throws IOException {
+        InputStream in = servletContext.getResourceAsStream("/WEB-INF/images/image-example.jpg");
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE); // <-- нужный тип
+        /*
+        import org.apache.commons.io.IOUtils;
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+         */
+        IOUtils.copy(in, response.getOutputStream());
+    }
+    
+    //Using the HttpMessageConverter
+    @RequestMapping(value = "/image-byte-array", method = RequestMethod.GET)
+    public @ResponseBody byte[] getImageAsByteArray() throws IOException {
+        InputStream in = servletContext.getResourceAsStream("/WEB-INF/images/image-example.jpg");
+        return IOUtils.toByteArray(in);
+    }
+    
+    //Using the ResponseEntity Class
+    @RequestMapping(value = "/image-response-entity", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getImageAsResponseEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        InputStream in = servletContext.getResourceAsStream("/WEB-INF/images/image-example.jpg");
+        byte[] media = IOUtils.toByteArray(in);
+        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+         
+        return new ResponseEntity<>(media, headers, HttpStatus.OK);
+    }
+    
+    
+    //Returning Image Using the Resource Class
+    @ResponseBody
+    @RequestMapping(value = "/image-resource-simple", method = RequestMethod.GET)
+    public Resource getImageAsResourceSimple() {
+       return new ServletContextResource(servletContext, "/WEB-INF/images/image-example.jpg");
+    }
+    //or, if we want more control over the response headers:
+    @RequestMapping(value = "/image-resource-header", method = RequestMethod.GET)
+    public ResponseEntity<Resource> getImageAsResourceHeader() {
+        HttpHeaders headers = new HttpHeaders();
+        Resource resource = 
+          new ServletContextResource(servletContext, "/WEB-INF/images/image-example.jpg");
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+    
 }
